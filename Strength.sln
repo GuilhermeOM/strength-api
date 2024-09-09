@@ -15,6 +15,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A7A6B25E-AB58-4AB6-A46B-F7EEEFAB2792}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
@@ -28,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{190F9D50-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strength.Application.UnitTests", "Strength.Application.UnitTests\Strength.Application.UnitTests.csproj", "{E7B7A7F8-2A71-406E-BB8A-EEDD7F569C20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Strength.Infrastructure.UnitTests", "Strength.Infrastructure.UnitTests\Strength.Infrastructure.UnitTests.csproj", "{FE98FF3D-CE04-4F87-A441-107BAED096F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Strength.Infrastructure.UnitTests", "Strength.Infrastructure.UnitTests\Strength.Infrastructure.UnitTests.csproj", "{FE98FF3D-CE04-4F87-A441-107BAED096F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
