@@ -12,6 +12,7 @@ using Domain.Repositories;
 using Domain.Shared;
 using Microsoft.AspNetCore.Http;
 using Strength.Domain.Entities.Enums;
+using System.Net;
 
 internal sealed class CreateUserCommandHandler(
     IUserRepository userRepository,
@@ -38,13 +39,13 @@ internal sealed class CreateUserCommandHandler(
             var newUserId = await userRepository.CreateUserAsync(user, cancellationToken);
             if (newUserId == Guid.Empty)
             {
-                return Result.Failure(UserErrors.NotCreated);
+                return ResponseResult.WithErrors(HttpStatusCode.InternalServerError, [UserErrors.NotCreated]);
             }
 
             var role = await roleRepository.GetRoleByNameAsync(RoleName.User, cancellationToken);
             if (role is null)
             {
-                return Result.Failure(RoleErrors.NotFound);
+                return ResponseResult.WithErrors(HttpStatusCode.InternalServerError, [RoleErrors.NotFound]);
             }
 
             var newUserRole = await userRoleRepository.CreateUserRoleAsync(new UserRole
@@ -55,7 +56,7 @@ internal sealed class CreateUserCommandHandler(
 
             if (newUserRole is null)
             {
-                return Result.Failure(UserRoleErrors.NotCreated);
+                return ResponseResult.WithErrors(HttpStatusCode.InternalServerError, [UserRoleErrors.NotCreated]);
             }
 
             var httpContextRequest = httpContextAccessor.HttpContext?.Request;

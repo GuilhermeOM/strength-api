@@ -1,5 +1,6 @@
 namespace Strength.Application.Users.Commands.LoginUser;
 
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -19,16 +20,16 @@ internal sealed class LoginUserCommandHandler(
 
         if (userWithRoles is null)
         {
-            return Result.Failure<AuthToken>(UserErrors.NotFound);
+            return ResponseResult.WithErrors<AuthToken>(HttpStatusCode.NotFound, [UserErrors.NotFound]);
         }
 
         if (userWithRoles.VerifiedAt is null)
         {
-            return Result.Failure<AuthToken>(UserErrors.NotVerified);
+            return ResponseResult.WithErrors<AuthToken>(HttpStatusCode.BadRequest, [UserErrors.NotVerified]);
         }
 
         return !VerifyPasswordHash(request.Password, userWithRoles.PasswordHash, userWithRoles.PasswordSalt)
-            ? Result.Failure<AuthToken>(UserErrors.InvalidPassword)
+            ? ResponseResult.WithErrors<AuthToken>(HttpStatusCode.BadRequest, [UserErrors.InvalidPassword])
             : Result.Success(tokenProvider.Create(userWithRoles));
     }
 

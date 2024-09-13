@@ -28,11 +28,11 @@ public class LoginUserCommandHandlerTests
             this.tokenProviderMock.Object);
 
         // Act
-        var result = await handler.Handle(command, default);
+        var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        _ = result.IsFailure.Should().BeTrue();
-        _ = result.Error.Should().Be(UserErrors.NotFound);
+        _ = ((int)result.StatusCode).Should().Be(404);
+        _ = result.Errors.Should().Contain(UserErrors.NotFound);
     }
 
     [Fact]
@@ -52,11 +52,11 @@ public class LoginUserCommandHandlerTests
             this.tokenProviderMock.Object);
 
         // Act
-        var result = await handler.Handle(command, default);
+        var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        _ = result.IsFailure.Should().BeTrue();
-        _ = result.Error.Should().Be(UserErrors.NotVerified);
+        _ = ((int)result.StatusCode).Should().Be(400);
+        _ = result.Errors.Should().Contain(UserErrors.NotVerified);
     }
 
     [Fact]
@@ -86,11 +86,11 @@ public class LoginUserCommandHandlerTests
             this.tokenProviderMock.Object);
 
         // Act
-        var result = await handler.Handle(command, default);
+        var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        _ = result.IsFailure.Should().BeTrue();
-        _ = result.Error.Should().Be(UserErrors.InvalidPassword);
+        _ = ((int)result.StatusCode).Should().Be(400);
+        _ = result.Errors.Should().Contain(UserErrors.InvalidPassword);
     }
 
     [Fact]

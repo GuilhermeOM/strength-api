@@ -1,5 +1,6 @@
 namespace Strength.Application.Users.Commands.VerifyUser;
 
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Abstractions.Messaging;
@@ -17,7 +18,7 @@ internal sealed class VerifyUserCommandHandler(
 
         if (user is null)
         {
-            return Result.Failure(UserErrors.InvalidVerificationToken);
+            return ResponseResult.WithErrors(HttpStatusCode.BadRequest, [UserErrors.InvalidVerificationToken]);
         }
 
         user.VerifiedAt = DateTime.Now;
@@ -26,7 +27,7 @@ internal sealed class VerifyUserCommandHandler(
         {
             var updatedUser = await userRepository.UpdateUserAsync(user, cancellationToken);
             return updatedUser is null
-                ? Result.Failure(ProcessErrors.InternalError)
+                ? ResponseResult.WithErrors(HttpStatusCode.InternalServerError, [ProcessErrors.InternalError])
                 : Result.Success();
         }, cancellationToken);
     }

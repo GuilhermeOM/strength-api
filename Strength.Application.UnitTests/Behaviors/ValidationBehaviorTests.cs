@@ -32,13 +32,13 @@ public class ValidationBehaviorTests
         });
 
         // Act
-        var result = (ValidationResult)await validationBehavior.Handle(createUserCommand, FakeHandler, default);
+        var result = (ResponseResult)await validationBehavior.Handle(createUserCommand, FakeHandler, default);
 
         // Assert
         _ = result.Should().NotBeNull();
         _ = result.IsFailure.Should().BeTrue();
         _ = result.Errors.Length.Should().Be(2);
-        _ = result.Error.Code.Should().Be(ErrorConstants.VALIDATIONERROR);
+        _ = result.Error.Code.Should().Be(ErrorConstants.RESPONSEFAILURE);
     }
 
     [Fact]

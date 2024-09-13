@@ -1,5 +1,6 @@
 namespace Strength.Application.Abstractions.Behaviors;
 
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -48,14 +49,14 @@ public class ValidationBehavior<TRequest, TResponse>(
     {
         if (typeof(TResult) == typeof(Result))
         {
-            return (ValidationResult.WithErrors(errors) as TResult)!;
+            return (ResponseResult.WithErrors(HttpStatusCode.BadRequest, errors) as TResult)!;
         }
 
-        var validationResult = typeof(ValidationResult<>)
+        var validationResult = typeof(ResponseResult<>)
             .GetGenericTypeDefinition()
             .MakeGenericType(typeof(TResult).GenericTypeArguments[0])
-            .GetMethod(nameof(ValidationResult.WithErrors))!
-            .Invoke(null, [errors])!;
+            .GetMethod(nameof(ResponseResult.WithErrors))!
+            .Invoke(HttpStatusCode.BadRequest, [errors])!;
 
         return (TResult)validationResult;
     }

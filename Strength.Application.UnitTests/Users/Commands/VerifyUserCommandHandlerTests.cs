@@ -26,11 +26,11 @@ public class VerifyUserCommandHandlerTests
             this.unitOfWorkMock.Object);
 
         // Act
-        var result = await handler.Handle(command, default);
+        var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        _ = result.IsFailure.Should().BeTrue();
-        _ = result.Error.Should().Be(UserErrors.InvalidVerificationToken);
+        _ = ((int)result.StatusCode).Should().Be(400);
+        _ = result.Errors.Should().Contain(UserErrors.InvalidVerificationToken);
     }
 
     [Fact]

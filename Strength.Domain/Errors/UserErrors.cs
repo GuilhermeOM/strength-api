@@ -4,7 +4,7 @@ using Shared;
 
 public static class UserErrors
 {
-    public static readonly CustomError InvalidEmail = new("User.InvalidPassword", "Invalid email");
+    public static readonly CustomError InvalidEmail = new("User.InvalidEmail", "Invalid email");
     public static readonly CustomError InvalidPassword = new("User.InvalidPassword", "Password is incorrect");
     public static readonly CustomError InvalidConfirmPassword = new("User.InvalidConfirmPassword", "Confirm password is not equal to password");
     public static readonly CustomError InvalidVerificationToken = new("User.InvalidVerificationToken", "Invalid verification token");
