@@ -52,11 +52,10 @@ public class ValidationBehavior<TRequest, TResponse>(
             return (ResponseResult.WithErrors(HttpStatusCode.BadRequest, errors) as TResult)!;
         }
 
-        var validationResult = typeof(ResponseResult<>)
-            .GetGenericTypeDefinition()
-            .MakeGenericType(typeof(TResult).GenericTypeArguments[0])
-            .GetMethod(nameof(ResponseResult.WithErrors))!
-            .Invoke(HttpStatusCode.BadRequest, [errors])!;
+        var validationResult = typeof(ResponseResult)
+            .GetMethod(nameof(ResponseResult.WithErrors), 1, [typeof(HttpStatusCode), typeof(CustomError[])])!
+            .MakeGenericMethod(typeof(TResult).GenericTypeArguments[0])
+            .Invoke(null, [HttpStatusCode.BadRequest, errors])!;
 
         return (TResult)validationResult;
     }
