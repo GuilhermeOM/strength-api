@@ -50,6 +50,15 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+builder.Services.AddCors(options =>
+    options.AddPolicy(builder.Configuration["Cors:PolicyName"]!, configuration =>
+    {
+        _ = configuration.WithOrigins(builder.Configuration["Cors:Origin"]!);
+        _ = configuration.AllowAnyHeader();
+        _ = configuration.AllowAnyMethod();
+        _ = configuration.AllowCredentials();
+    }));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -65,5 +74,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors(builder.Configuration["Cors:PolicyName"]!);
 
 app.Run();
