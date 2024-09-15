@@ -25,24 +25,26 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
             out var expirationInMinutes);
         expirationInMinutes = jwtExpirationInMinutesIsConfigured ? expirationInMinutes : 60; // default 1h
 
+        var claims = new List<Claim> {
+            new(JwtRegisteredClaimNames.Sub, userWithRoles.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, userWithRoles.Email),
+            new("verified", userWithRoles.VerifiedAt.ToString() ?? string.Empty),
+        };
+
+        foreach (var userRole in userWithRoles.UserRoles)
+        {
+            claims.Add(new(ClaimTypes.Role, Enum.GetName(userRole.Role.Name)!));
+        }
+
         var tokenDescription = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Sub, userWithRoles.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, userWithRoles.Email),
-                new Claim("verified", userWithRoles.VerifiedAt.ToString() ?? string.Empty),
-            ]),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(expirationInMinutes),
             SigningCredentials = credentials,
             Issuer = configuration["Jwt:Issuer"],
             Audience = configuration["Jwt:Audience"],
             TokenType = "Bearer"
         };
-
-        foreach (var userRole in userWithRoles.UserRoles)
-        {
-            tokenDescription.Claims.Add(ClaimTypes.Role, userRole.Role.Name);
-        }
 
         var handler = new JsonWebTokenHandler();
         var token = handler.CreateToken(tokenDescription);
