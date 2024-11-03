@@ -1,14 +1,14 @@
-namespace Strength.Infrastructure.Security;
+namespace Strength.Infrastructure.Services;
 
 using System.Security.Claims;
 using System.Text;
 using Domain.Entities;
-using Domain.Shared;
+using Domain.Services.Token;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
-internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
+internal sealed class TokenService(IConfiguration configuration) : ITokenService
 {
     public AuthToken Create(User userWithRoles)
     {
@@ -25,16 +25,15 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
             out var expirationInMinutes);
         expirationInMinutes = jwtExpirationInMinutesIsConfigured ? expirationInMinutes : 60; // default 1h
 
-        var claims = new List<Claim> {
+        var claims = new List<Claim>
+        {
             new(JwtRegisteredClaimNames.Sub, userWithRoles.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, userWithRoles.Email),
-            new("verified", userWithRoles.VerifiedAt.ToString() ?? string.Empty),
+            new("verified", userWithRoles.VerifiedAt.ToString() ?? string.Empty)
         };
 
-        foreach (var userRole in userWithRoles.UserRoles)
-        {
-            claims.Add(new(ClaimTypes.Role, Enum.GetName(userRole.Role.Name)!));
-        }
+        claims.AddRange(
+            userWithRoles.UserRoles.Select(userRole => new Claim(ClaimTypes.Role, Enum.GetName(userRole.Role.Name)!)));
 
         var tokenDescription = new SecurityTokenDescriptor
         {
@@ -51,9 +50,7 @@ internal sealed class TokenProvider(IConfiguration configuration) : ITokenProvid
 
         return new AuthToken
         {
-            TokenType = tokenDescription.TokenType,
-            Token = token,
-            ExpiresAt = tokenDescription.Expires.Value,
+            TokenType = tokenDescription.TokenType, Token = token, ExpiresAt = tokenDescription.Expires.Value
         };
     }
 }

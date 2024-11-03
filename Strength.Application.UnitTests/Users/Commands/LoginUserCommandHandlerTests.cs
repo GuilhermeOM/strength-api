@@ -1,15 +1,17 @@
 namespace Strength.Application.UnitTests.Users.Commands;
 
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using Application.Users.Commands.LoginUser;
 using Domain.Repositories;
+using Domain.Services.Token;
 using Domain.Shared;
 
 public class LoginUserCommandHandlerTests
 {
+    private readonly Mock<ITokenService> tokenProviderMock = new();
     private readonly Mock<IUserRepository> userRepositoryMock = new();
-    private readonly Mock<ITokenProvider> tokenProviderMock = new();
 
     [Fact]
     public async Task ShouldReturnFailureWhenEmailNotExists()
@@ -17,10 +19,8 @@ public class LoginUserCommandHandlerTests
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
 
-        _ = this.userRepositoryMock.Setup(
-            mock => mock.GetUserByEmailAsync(
-                It.IsAny<string>(),
-                default))
+        this.userRepositoryMock
+            .Setup(mock => mock.GetUserByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(null as User);
 
         var handler = new LoginUserCommandHandler(
@@ -31,8 +31,8 @@ public class LoginUserCommandHandlerTests
         var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        _ = ((int)result.StatusCode).Should().Be(404);
-        _ = result.Errors.Should().Contain(UserErrors.NotFound);
+        result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        result.Errors.Should().Contain(UserErrors.NotFound);
     }
 
     [Fact]
@@ -41,10 +41,8 @@ public class LoginUserCommandHandlerTests
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
 
-        _ = this.userRepositoryMock.Setup(
-            mock => mock.GetUserWithRolesByEmailAsync(
-                It.IsAny<string>(),
-                default))
+        this.userRepositoryMock
+            .Setup(mock => mock.GetUserWithRolesByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User { Email = command.Email, VerifiedAt = null });
 
         var handler = new LoginUserCommandHandler(
@@ -55,8 +53,8 @@ public class LoginUserCommandHandlerTests
         var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        _ = ((int)result.StatusCode).Should().Be(400);
-        _ = result.Errors.Should().Contain(UserErrors.NotVerified);
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        result.Errors.Should().Contain(UserErrors.NotVerified);
     }
 
     [Fact]
@@ -69,10 +67,8 @@ public class LoginUserCommandHandlerTests
         var passwordSalt = hmac.Key;
         var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password321"));
 
-        _ = this.userRepositoryMock.Setup(
-                mock => mock.GetUserWithRolesByEmailAsync(
-                    It.IsAny<string>(),
-                    default))
+        this.userRepositoryMock
+            .Setup(mock => mock.GetUserWithRolesByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User
             {
                 Email = command.Email,
@@ -89,12 +85,12 @@ public class LoginUserCommandHandlerTests
         var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        _ = ((int)result.StatusCode).Should().Be(400);
-        _ = result.Errors.Should().Contain(UserErrors.InvalidPassword);
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        result.Errors.Should().Contain(UserErrors.InvalidPassword);
     }
 
     [Fact]
-    public async Task ShouldReturnToken()
+    public async Task ShouldReturnTokenWhenPasswordMatches()
     {
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
@@ -103,10 +99,8 @@ public class LoginUserCommandHandlerTests
         var passwordSalt = hmac.Key;
         var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(command.Password));
 
-        _ = this.userRepositoryMock.Setup(
-                mock => mock.GetUserWithRolesByEmailAsync(
-                    It.IsAny<string>(),
-                    default))
+        this.userRepositoryMock
+            .Setup(mock => mock.GetUserWithRolesByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User
             {
                 Email = command.Email,
@@ -115,9 +109,8 @@ public class LoginUserCommandHandlerTests
                 PasswordSalt = passwordSalt
             });
 
-        _ = this.tokenProviderMock.Setup(
-                mock => mock.Create(
-                    It.IsAny<User>()))
+        this.tokenProviderMock
+            .Setup(mock => mock.Create(It.IsAny<User>()))
             .Returns(new AuthToken
             {
                 ExpiresAt = DateTime.Now,
@@ -133,7 +126,7 @@ public class LoginUserCommandHandlerTests
         var result = await handler.Handle(command, default);
 
         // Assert
-        _ = result.IsSuccess.Should().BeTrue();
-        _ = result.Value.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
     }
 }

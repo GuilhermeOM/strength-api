@@ -2,5 +2,5 @@ namespace Strength.Domain.Constants;
 
 public static class ErrorConstants
 {
-    public const string RESPONSEFAILURE = "Response failure";
+    public const string ResponseFailure = "Response failure";
 }

@@ -1,3 +1,5 @@
 namespace Strength.Presentation.Users.Responses;
 
-internal sealed record VerifyResponse(string Feedback);
+using Base;
+
+internal sealed record VerifyResponse(string Feedback) : FeedbackResponse(Feedback);

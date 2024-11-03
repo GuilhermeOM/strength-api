@@ -1,8 +1,6 @@
 namespace Strength.Application.Users.Commands.VerifyUser;
 
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Abstractions.Messaging;
 using Domain.Errors;
 using Domain.Repositories;
@@ -21,7 +19,12 @@ internal sealed class VerifyUserCommandHandler(
             return ResponseResult.WithErrors(HttpStatusCode.BadRequest, [UserErrors.InvalidVerificationToken]);
         }
 
-        user.VerifiedAt = DateTime.Now;
+        if (user.VerifiedAt is not null)
+        {
+            return ResponseResult.WithErrors(HttpStatusCode.Conflict, [UserErrors.AlreadyVerified]);
+        }
+
+        user.VerifiedAt = DateTime.UtcNow;
 
         return await unitOfWork.BeginTransactionAsync(async () =>
         {

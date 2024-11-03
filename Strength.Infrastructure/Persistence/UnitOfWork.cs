@@ -1,9 +1,8 @@
 namespace Strength.Infrastructure.Persistence;
 
-using System.Threading.Tasks;
 using Domain.Errors;
+using Domain.Repositories;
 using Domain.Shared;
-using Strength.Domain.Repositories;
 
 internal sealed class UnitOfWork(AppDataContext context) : IUnitOfWork
 {

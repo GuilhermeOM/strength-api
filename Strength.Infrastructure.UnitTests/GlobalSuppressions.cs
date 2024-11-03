@@ -10,4 +10,5 @@ using System.Diagnostics.CodeAnalysis;
     "CA2201:Não gerar tipos de exceção reservados",
     Justification = "Generic exceptions simplyfies some test use cases",
     Scope = "member",
-    Target = "~M:Strength.Infrastructure.UnitTests.Persistence.UnitOfWorkTests.BeginTransactionAsyncShouldRollbackWhenExceptionIsThrown~System.Threading.Tasks.Task")]
+    Target =
+        "~M:Strength.Infrastructure.UnitTests.Persistence.UnitOfWorkTests.BeginTransactionAsyncShouldRollbackWhenExceptionIsThrown~System.Threading.Tasks.Task")]

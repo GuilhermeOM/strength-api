@@ -7,7 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage(
     "Style",
-    "IDE0072:Add missing cases to switch expression",
-    Justification = "No need to implement cases that are not beeing used",
+    "IDE0072:Adicionar casos ausentes",
+    Justification = "<Pendente>",
     Scope = "member",
-    Target = "~M:Strength.Presentation.Shared.ApiController.HandleFailure(Strength.Domain.Shared.Result)~Microsoft.AspNetCore.Mvc.IActionResult")]
+    Target =
+        "~M:Strength.Presentation.ApiController.HandleFailure(Strength.Domain.Shared.Result)~Microsoft.AspNetCore.Mvc.IActionResult")]

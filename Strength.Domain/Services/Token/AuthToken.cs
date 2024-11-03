@@ -1,4 +1,4 @@
-namespace Strength.Domain.Shared;
+namespace Strength.Domain.Services.Token;
 
 public class AuthToken
 {

@@ -1,11 +1,9 @@
 namespace Strength.Application.Abstractions.Behaviors;
 
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
+using Domain.Shared;
 using FluentValidation;
 using MediatR;
-using Strength.Domain.Shared;
 
 public class ValidationBehavior<TRequest, TResponse>(
     IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
@@ -25,14 +23,12 @@ public class ValidationBehavior<TRequest, TResponse>(
         var context = new ValidationContext<TRequest>(request);
 
         var asyncValidations = validators.Select(async validator => await validator.ValidateAsync(context));
+        var asyncValidationsResult = await Task.WhenAll(asyncValidations);
 
-        var errors = (await Task.WhenAll(asyncValidations))
+        var errors = asyncValidationsResult
             .SelectMany(validationResult => validationResult.Errors)
             .Where(validationFailure => validationFailure is not null)
-            .Select(failure => new CustomError(
-                failure.PropertyName,
-                failure.ErrorMessage
-            ))
+            .Select(failure => new CustomError(failure.PropertyName, failure.ErrorMessage))
             .Distinct()
             .ToArray();
 

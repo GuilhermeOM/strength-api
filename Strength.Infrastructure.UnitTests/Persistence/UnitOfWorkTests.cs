@@ -1,10 +1,10 @@
 namespace Strength.Infrastructure.UnitTests.Persistence;
 
+using Domain.Shared;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Strength.Domain.Shared;
-using Strength.Infrastructure.Persistence;
 
 public class UnitOfWorkTests
 {
@@ -16,22 +16,22 @@ public class UnitOfWorkTests
 
     public UnitOfWorkTests()
     {
-        this.databaseFacadeMock = new(this.appDataContextMock.Object);
+        this.databaseFacadeMock = new Mock<DatabaseFacade>(this.appDataContextMock.Object);
 
-        _ = this.appDataContextMock.Setup(
-            context => context.Database)
+        this.appDataContextMock
+            .Setup(context => context.Database)
             .Returns(this.databaseFacadeMock.Object);
 
-        _ = this.databaseFacadeMock.Setup(
-            database => database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+        this.databaseFacadeMock
+            .Setup(database => database.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(this.dbContextTransactionMock.Object);
 
-        _ = this.dbContextTransactionMock.Setup(
-            transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()))
+        this.dbContextTransactionMock
+            .Setup(transaction => transaction.CommitAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _ = this.dbContextTransactionMock.Setup(
-            transaction => transaction.RollbackAsync(It.IsAny<CancellationToken>()))
+        this.dbContextTransactionMock
+            .Setup(transaction => transaction.RollbackAsync(It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
         this.unitOfWork = new UnitOfWork(this.appDataContextMock.Object);
@@ -41,13 +41,16 @@ public class UnitOfWorkTests
     public async Task BeginTransactionAsyncShouldCommitWhenActionSucceeds()
     {
         // Arrange
-        static Task<Result> Action() => Task.FromResult(Result.Success());
+        static Task<Result> Action()
+        {
+            return Task.FromResult(Result.Success());
+        }
 
         // Act
         var actualResult = await this.unitOfWork.BeginTransactionAsync(Action, CancellationToken.None);
 
         // Assert
-        _ = actualResult.IsSuccess.Should().BeTrue();
+        actualResult.IsSuccess.Should().BeTrue();
 
         this.appDataContextMock.Verify(
             context => context.SaveChangesAsync(It.IsAny<CancellationToken>()),
@@ -64,7 +67,10 @@ public class UnitOfWorkTests
     public async Task BeginTransactionAsyncShouldRollbackWhenActionFails()
     {
         // Arrange
-        static Task<Result> Action() => Task.FromResult(Result.Failure(ProcessErrors.InternalError));
+        static Task<Result> Action()
+        {
+            return Task.FromResult(Result.Failure(ProcessErrors.InternalError));
+        }
 
         // Act
         var actualResult = await this.unitOfWork.BeginTransactionAsync(Action, CancellationToken.None);
@@ -87,13 +93,16 @@ public class UnitOfWorkTests
     public async Task BeginTransactionAsyncShouldRollbackWhenExceptionIsThrown()
     {
         // Arrange
-        static Task<Result> Action() => throw new Exception();
+        static Task<Result> Action()
+        {
+            throw new Exception();
+        }
 
         // Act
         var actualResult = await this.unitOfWork.BeginTransactionAsync(Action, CancellationToken.None);
 
         // Assert
-        _ = actualResult.IsSuccess.Should().BeFalse();
+        actualResult.IsSuccess.Should().BeFalse();
 
         this.appDataContextMock.Verify(
             context => context.SaveChangesAsync(It.IsAny<CancellationToken>()),
