@@ -1,14 +1,14 @@
 namespace Strength.Infrastructure.Persistence;
 
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Strength.Domain.Entities;
 
 public class AppDataContext(DbContextOptions options) : DbContext(options)
 {
+    public DbSet<User> Users { get; init; }
+    public DbSet<UserRole> UserRoles { get; init; }
+    public DbSet<Role> Roles { get; init; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDataContext).Assembly);
-
-    public DbSet<User> Users { get; init; }
-    public DbSet<UserRole> UserRoles { get; set; }
-    public DbSet<Role> Roles { get; set; }
 }

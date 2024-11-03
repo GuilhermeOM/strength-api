@@ -29,14 +29,14 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  
+
   <ItemGroup>
     <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
       <HintPath>..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.8\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
     </Reference>
   </ItemGroup>
 
-  
+
   <ItemGroup>
     <Compile Remove="Persistence\**" />
     <Compile Remove="obj\**" />

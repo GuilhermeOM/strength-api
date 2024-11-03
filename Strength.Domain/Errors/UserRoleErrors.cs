@@ -1,6 +1,6 @@
 namespace Strength.Domain.Errors;
 
-using Strength.Domain.Shared;
+using Shared;
 
 public static class UserRoleErrors
 {

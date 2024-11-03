@@ -1,24 +1,25 @@
 namespace Strength.Infrastructure.Persistence.Repositories;
 
-using System.Threading;
-using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
-using Strength.Domain.Repositories;
-using Persistence;
+using Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 internal sealed class UserRepository(AppDataContext context) : IUserRepository
 {
-    public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken) => await context.Users
+    public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken) => await context
+        .Users
         .Where(user => user.Email == email)
         .FirstOrDefaultAsync(cancellationToken);
 
-    public async Task<User?> GetUserWithRolesByEmailAsync(string email, CancellationToken cancellationToken) => await context.Users
+    public async Task<User?> GetUserWithRolesByEmailAsync(string email, CancellationToken cancellationToken) => await context
+        .Users
         .Where(user => user.Email == email)
         .Include(user => user.UserRoles)
         .ThenInclude(userRoles => userRoles.Role)
         .FirstOrDefaultAsync(cancellationToken);
 
-    public async Task<User?> GetUserByVerificationTokenAsync(string verificationToken, CancellationToken cancellationToken) => await context.Users
+    public async Task<User?> GetUserByVerificationTokenAsync(string verificationToken, CancellationToken cancellationToken) => await context
+        .Users
         .Where(user => user.VerificationToken == verificationToken)
         .FirstOrDefaultAsync(cancellationToken);
 

@@ -1,7 +1,7 @@
 namespace Strength.Infrastructure.Persistence.Repositories;
 
-using Strength.Domain.Entities;
-using Strength.Domain.Repositories;
+using Domain.Entities;
+using Domain.Repositories;
 
 internal sealed class UserRoleRepository(AppDataContext context) : IUserRoleRepository
 {

@@ -3,16 +3,15 @@ namespace Strength.Application.Users.Commands.LoginUser;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Abstractions.Messaging;
 using Domain.Errors;
 using Domain.Repositories;
+using Domain.Services.Token;
 using Domain.Shared;
 
 internal sealed class LoginUserCommandHandler(
     IUserRepository userRepository,
-    ITokenProvider tokenProvider) : ICommandHandler<LoginUserCommand, AuthToken>
+    ITokenService tokenService) : ICommandHandler<LoginUserCommand, AuthToken>
 {
     public async Task<Result<AuthToken>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
@@ -30,7 +29,7 @@ internal sealed class LoginUserCommandHandler(
 
         return !VerifyPasswordHash(request.Password, userWithRoles.PasswordHash, userWithRoles.PasswordSalt)
             ? ResponseResult.WithErrors<AuthToken>(HttpStatusCode.BadRequest, [UserErrors.InvalidPassword])
-            : Result.Success(tokenProvider.Create(userWithRoles));
+            : Result.Success(tokenService.Create(userWithRoles));
     }
 
     private static bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)

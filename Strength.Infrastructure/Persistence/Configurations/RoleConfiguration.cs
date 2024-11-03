@@ -1,8 +1,8 @@
 namespace Strength.Infrastructure.Persistence.Configurations;
 
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Strength.Domain.Entities;
 
 internal sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
 {

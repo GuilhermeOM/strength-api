@@ -1,6 +1,6 @@
 namespace Strength.Domain.Repositories;
 
-using Strength.Domain.Entities;
+using Entities;
 
 public interface IUserRoleRepository
 {

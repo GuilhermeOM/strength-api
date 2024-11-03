@@ -1,13 +1,14 @@
 namespace Strength.Application.UnitTests.Users.Commands;
 
+using System.Net;
 using Application.Users.Commands.VerifyUser;
 using Domain.Repositories;
-using Strength.Domain.Shared;
+using Domain.Shared;
 
 public class VerifyUserCommandHandlerTests
 {
-    private readonly Mock<IUserRepository> userRepositoryMock = new();
     private readonly Mock<IUnitOfWork> unitOfWorkMock = new();
+    private readonly Mock<IUserRepository> userRepositoryMock = new();
 
     [Fact]
     public async Task ShouldReturnFailureWhenVerificationTokenIsNotAttachToUser()
@@ -15,10 +16,10 @@ public class VerifyUserCommandHandlerTests
         // Arrange
         var command = new VerifyUserCommand("fakeVerificationToken");
 
-        _ = this.userRepositoryMock.Setup(
-            mock => mock.GetUserByVerificationTokenAsync(
-                It.IsAny<string>(),
-                default))
+        this.userRepositoryMock.Setup(
+                mock => mock.GetUserByVerificationTokenAsync(
+                    It.IsAny<string>(),
+                    default))
             .ReturnsAsync(null as User);
 
         var handler = new VerifyUserCommandHandler(
@@ -29,8 +30,33 @@ public class VerifyUserCommandHandlerTests
         var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        _ = ((int)result.StatusCode).Should().Be(400);
-        _ = result.Errors.Should().Contain(UserErrors.InvalidVerificationToken);
+        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        result.Errors.Should().Contain(UserErrors.InvalidVerificationToken);
+    }
+
+    [Fact]
+    public async Task ShouldReturnFailureWhenUserAlreadyVerified()
+    {
+        // Arrange
+        var command = new VerifyUserCommand("fakeVerificationToken");
+
+        this.userRepositoryMock
+            .Setup(mock => mock.GetUserByVerificationTokenAsync(It.IsAny<string>(), default))
+            .ReturnsAsync(new User()
+            {
+                VerifiedAt = DateTime.UtcNow
+            });
+
+        var handler = new VerifyUserCommandHandler(
+            this.userRepositoryMock.Object,
+            this.unitOfWorkMock.Object);
+
+        // Act
+        var result = (IResponseResult)await handler.Handle(command, default);
+
+        // Assert
+        result.StatusCode.Should().Be(HttpStatusCode.Conflict);
+        result.Errors.Should().Contain(UserErrors.AlreadyVerified);
     }
 
     [Fact]
@@ -40,16 +66,12 @@ public class VerifyUserCommandHandlerTests
         var command = new VerifyUserCommand("fakeVerificationToken");
         var user = new User { Id = Guid.NewGuid(), Email = "email@test.com" };
 
-        _ = this.userRepositoryMock.Setup(
-            mock => mock.GetUserByVerificationTokenAsync(
-                It.IsAny<string>(),
-                default))
+        this.userRepositoryMock
+            .Setup(mock => mock.GetUserByVerificationTokenAsync(It.IsAny<string>(), default))
             .ReturnsAsync(user);
 
-        _ = this.unitOfWorkMock.Setup(
-            mock => mock.BeginTransactionAsync(
-                It.IsAny<Func<Task<Result>>>(),
-                default))
+        this.unitOfWorkMock
+            .Setup(mock => mock.BeginTransactionAsync(It.IsAny<Func<Task<Result>>>(), default))
             .ReturnsAsync(Result.Success());
 
         var handler = new VerifyUserCommandHandler(
@@ -60,7 +82,7 @@ public class VerifyUserCommandHandlerTests
         var result = await handler.Handle(command, default);
 
         // Assert
-        _ = result.IsSuccess.Should().BeTrue();
-        _ = user.VerifiedAt.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        user.VerifiedAt.Should().NotBeNull();
     }
 }

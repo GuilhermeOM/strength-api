@@ -1,7 +1,7 @@
 namespace Strength.Domain.Repositories;
 
-using Strength.Domain.Entities;
-using Strength.Domain.Entities.Enums;
+using Entities;
+using Entities.Enums;
 
 public interface IRoleRepository
 {

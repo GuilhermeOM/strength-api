@@ -1,7 +1,7 @@
 namespace Strength.Application.Abstractions.Messaging;
 
-using MediatR;
 using Domain.Shared;
+using MediatR;
 
 public interface ICommand : IRequest<Result>;
 

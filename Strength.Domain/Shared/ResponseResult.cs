@@ -9,7 +9,9 @@ public sealed class ResponseResult(HttpStatusCode statusCode, CustomError[] erro
     public CustomError[] Errors { get; } = errors;
 
     public static ResponseResult WithErrors(HttpStatusCode statusCode, CustomError[] errors) => new(statusCode, errors);
-    public static ResponseResult<TValue> WithErrors<TValue>(HttpStatusCode statusCode, CustomError[] errors) => new(statusCode, errors);
+
+    public static ResponseResult<TValue> WithErrors<TValue>(HttpStatusCode statusCode, CustomError[] errors) =>
+        new(statusCode, errors);
 }
 
 public sealed class ResponseResult<TValue>(HttpStatusCode statusCode, CustomError[] errors)

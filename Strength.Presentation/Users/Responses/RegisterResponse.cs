@@ -1,3 +1,5 @@
 namespace Strength.Presentation.Users.Responses;
 
-internal sealed record RegisterResponse(string Feedback);
+using Base;
+
+internal sealed record RegisterResponse(string Feedback) : FeedbackResponse(Feedback);

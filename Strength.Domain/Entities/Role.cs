@@ -1,9 +1,9 @@
 ﻿namespace Strength.Domain.Entities;
 
+using Base;
 using Enums;
 
-public class Role
+public class Role : BaseEntity
 {
-    public Guid Id { get; init; }
     public RoleName Name { get; init; }
 }
