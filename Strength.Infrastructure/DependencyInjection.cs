@@ -16,7 +16,8 @@ public static class DependencyInjection
         .AddFluentEmail(configuration)
         .AddSqlServer(configuration)
         .AddServices(configuration)
-        .AddRepositories();
+        .AddRepositories()
+        .AddMemoryCache();
 
     private static IServiceCollection AddSqlServer(this IServiceCollection services, IConfiguration configuration)
     {

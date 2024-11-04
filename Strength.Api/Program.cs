@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Strength.Application;
 using Strength.Infrastructure;
-using Strength.Presentation;
 using Swashbuckle.AspNetCore.Filters;
 
 var cultureInfo = CultureInfo.CreateSpecificCulture("en-US");
@@ -20,54 +19,57 @@ builder.Services
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthorization()
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            IssuerSigningKey =
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)),
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             ClockSkew = TimeSpan.Zero
         };
     });
 
-var presentationAssembly = typeof(AssemblyReference).Assembly;
+var presentationAssembly = typeof(Strength.Presentation.AssemblyReference).Assembly;
 
-builder.Services.AddControllers().AddApplicationPart(presentationAssembly);
+builder.Services
+    .AddControllers()
+    .AddApplicationPart(presentationAssembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("oauth2",
-        new OpenApiSecurityScheme
-        {
-            In = ParameterLocation.Header,
-            Name = "Authorization",
-            Type = SecuritySchemeType.ApiKey
-        });
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
 
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+var corsPolicyName = builder.Configuration["Cors:PolicyName"]!;
+var corsOrigin = builder.Configuration["Cors:Origin"]!;
+
 builder.Services.AddCors(options =>
-    options.AddPolicy(builder.Configuration["Cors:PolicyName"]!, configuration =>
+    options.AddPolicy(corsPolicyName, configuration =>
     {
-        _ = configuration.WithOrigins(builder.Configuration["Cors:Origin"]!);
-        _ = configuration.AllowAnyHeader();
-        _ = configuration.AllowAnyMethod();
-        _ = configuration.AllowCredentials();
+        configuration.WithOrigins(corsOrigin)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     }));
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger().UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -78,6 +80,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors(builder.Configuration["Cors:PolicyName"]!);
+app.UseCors(corsPolicyName);
 
 app.Run();
