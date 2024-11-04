@@ -69,7 +69,7 @@ public class UserController(ISender sender) : ApiController(sender)
         var result = await this.sender.Send(command, cancellationToken);
 
         return result.IsSuccess
-            ? this.Ok("A verification link was sent to your email.")
+            ? this.Ok(result.Value)
             : this.HandleFailure(result);
     }
 }

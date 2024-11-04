@@ -40,6 +40,7 @@ internal sealed class UserRepository(AppDataContext context) : IUserRepository
         }
 
         userContext = user;
+        userContext.UpdatedAt = DateTime.UtcNow;
 
         return userContext;
     }
