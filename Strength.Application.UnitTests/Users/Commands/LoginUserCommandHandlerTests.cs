@@ -41,9 +41,19 @@ public class LoginUserCommandHandlerTests
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
 
+        using var hmac = new HMACSHA512();
+        var passwordSalt = hmac.Key;
+        var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(command.Password));
+
         this.userRepositoryMock
             .Setup(mock => mock.GetUserWithRolesByEmailAsync(It.IsAny<string>(), default))
-            .ReturnsAsync(new User { Email = command.Email, VerifiedAt = null });
+            .ReturnsAsync(new User
+            {
+                Email = command.Email,
+                VerifiedAt = null,
+                PasswordSalt = passwordSalt,
+                PasswordHash = passwordHash
+            });
 
         var handler = new LoginUserCommandHandler(
             this.userRepositoryMock.Object,
@@ -53,7 +63,7 @@ public class LoginUserCommandHandlerTests
         var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         result.Errors.Should().Contain(UserErrors.NotVerified);
     }
 
@@ -72,7 +82,6 @@ public class LoginUserCommandHandlerTests
             .ReturnsAsync(new User
             {
                 Email = command.Email,
-                VerifiedAt = DateTime.Now,
                 PasswordSalt = passwordSalt,
                 PasswordHash = passwordHash
             });
@@ -85,7 +94,7 @@ public class LoginUserCommandHandlerTests
         var result = (IResponseResult)await handler.Handle(command, default);
 
         // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         result.Errors.Should().Contain(UserErrors.InvalidPassword);
     }
 

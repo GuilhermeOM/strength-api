@@ -20,16 +20,11 @@ public abstract class ApiController(ISender sender) : ControllerBase
             return responseError.StatusCode switch
             {
                 HttpStatusCode.OK => throw new InvalidOperationException("200 is not a valid error"),
-                HttpStatusCode.BadRequest => this.BadRequest(new ErrorDetailsResponse(
-                    nameof(StatusCodes.Status400BadRequest), StatusCodes.Status400BadRequest, responseError.Errors)),
-                HttpStatusCode.NotFound => this.NotFound(new ErrorDetailsResponse(nameof(StatusCodes.Status404NotFound),
-                    StatusCodes.Status404NotFound, responseError.Errors)),
-                HttpStatusCode.Conflict => this.Conflict(new ErrorDetailsResponse(nameof(StatusCodes.Status409Conflict),
-                    StatusCodes.Status409Conflict, responseError.Errors)),
-                _ => this.StatusCode(
-                    StatusCodes.Status500InternalServerError,
-                    new ErrorDetailsResponse(nameof(StatusCodes.Status500InternalServerError),
-                        StatusCodes.Status500InternalServerError, responseError.Errors))
+                HttpStatusCode.BadRequest => this.BadRequest(new ErrorDetailsResponse(nameof(StatusCodes.Status400BadRequest), StatusCodes.Status400BadRequest, responseError.Errors)),
+                HttpStatusCode.Unauthorized => this.Unauthorized(new ErrorDetailsResponse(nameof(StatusCodes.Status401Unauthorized), StatusCodes.Status401Unauthorized, responseError.Errors)),
+                HttpStatusCode.NotFound => this.NotFound(new ErrorDetailsResponse(nameof(StatusCodes.Status404NotFound), StatusCodes.Status404NotFound, responseError.Errors)),
+                HttpStatusCode.Conflict => this.Conflict(new ErrorDetailsResponse(nameof(StatusCodes.Status409Conflict), StatusCodes.Status409Conflict, responseError.Errors)),
+                _ => this.StatusCode(StatusCodes.Status500InternalServerError, new ErrorDetailsResponse(nameof(StatusCodes.Status500InternalServerError), StatusCodes.Status500InternalServerError, responseError.Errors))
             };
         }
         catch (Exception)

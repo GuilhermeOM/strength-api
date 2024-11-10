@@ -22,13 +22,13 @@ internal sealed class LoginUserCommandHandler(
             return ResponseResult.WithErrors<AuthToken>(HttpStatusCode.NotFound, [UserErrors.NotFound]);
         }
 
-        if (userWithRoles.VerifiedAt is null)
+        if (!VerifyPasswordHash(request.Password, userWithRoles.PasswordHash, userWithRoles.PasswordSalt))
         {
-            return ResponseResult.WithErrors<AuthToken>(HttpStatusCode.BadRequest, [UserErrors.NotVerified]);
+            return ResponseResult.WithErrors<AuthToken>(HttpStatusCode.Unauthorized, [UserErrors.InvalidPassword]);
         }
 
-        return !VerifyPasswordHash(request.Password, userWithRoles.PasswordHash, userWithRoles.PasswordSalt)
-            ? ResponseResult.WithErrors<AuthToken>(HttpStatusCode.BadRequest, [UserErrors.InvalidPassword])
+        return userWithRoles.VerifiedAt is null
+            ? ResponseResult.WithErrors<AuthToken>(HttpStatusCode.Unauthorized, [UserErrors.NotVerified])
             : Result.Success(tokenService.Create(userWithRoles));
     }
 
