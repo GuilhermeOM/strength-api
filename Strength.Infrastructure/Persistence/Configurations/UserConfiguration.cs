@@ -6,6 +6,5 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<User> builder) => _ = builder
-        .HasIndex(user => user.Email).IsUnique();
+    public void Configure(EntityTypeBuilder<User> builder) => builder.HasIndex(user => user.Email).IsUnique();
 }

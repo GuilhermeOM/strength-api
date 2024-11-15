@@ -8,18 +8,18 @@ internal sealed class CreateUserCommandValidator : AbstractValidator<CreateUserC
 {
     public CreateUserCommandValidator(IUserRepository userRepository)
     {
-        _ = this.RuleFor(x => x.Email)
+        this.RuleFor(x => x.Email)
             .NotEmpty()
             .EmailAddress();
 
-        _ = this.RuleFor(x => x.Email)
+        this.RuleFor(x => x.Email)
             .MustAsync(async (email, cancellationToken) =>
                 await userRepository.GetUserByEmailAsync(email, cancellationToken) is null)
             .WithMessage(UserErrors.AlreadyExists.Description);
 
-        _ = this.RuleFor(x => x.Password).MinimumLength(8);
+        this.RuleFor(x => x.Password).MinimumLength(8);
 
-        _ = this.RuleFor(x => x.ConfirmPassword)
+        this.RuleFor(x => x.ConfirmPassword)
             .Equal(x => x.Password)
             .WithMessage(UserErrors.InvalidConfirmPassword.Description);
     }

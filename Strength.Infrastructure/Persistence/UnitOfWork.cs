@@ -18,7 +18,7 @@ internal sealed class UnitOfWork(AppDataContext context) : IUnitOfWork
 
             if (result.IsSuccess)
             {
-                _ = await context.SaveChangesAsync(cancellationToken);
+                await context.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
             }
             else

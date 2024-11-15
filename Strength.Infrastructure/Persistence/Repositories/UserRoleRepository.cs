@@ -7,7 +7,7 @@ internal sealed class UserRoleRepository(AppDataContext context) : IUserRoleRepo
 {
     public async Task<Guid?> CreateUserRoleAsync(UserRole userRole, CancellationToken cancellationToken)
     {
-        _ = await context.UserRoles.AddAsync(userRole, cancellationToken);
+        await context.UserRoles.AddAsync(userRole, cancellationToken);
 
         return userRole.Id;
     }

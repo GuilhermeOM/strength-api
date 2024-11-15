@@ -25,10 +25,10 @@ public class ValidationBehaviorTests
         var result = (ResponseResult)await validationBehavior.Handle(createUserCommand, FakeHandler, default);
 
         // Assert
-        _ = result.Should().NotBeNull();
-        _ = result.IsFailure.Should().BeTrue();
-        _ = result.Errors.Length.Should().Be(2);
-        _ = result.Error.Code.Should().Be(ErrorConstants.ResponseFailure);
+        result.Should().NotBeNull();
+        result.IsFailure.Should().BeTrue();
+        result.Errors.Length.Should().Be(2);
+        result.Error.Code.Should().Be(ErrorConstants.ResponseFailure);
     }
 
     [Fact]
@@ -50,8 +50,8 @@ public class ValidationBehaviorTests
         var result = await validationBehavior.Handle(createUserCommand, FakeHandler, default);
 
         // Assert
-        _ = result.Should().NotBeNull();
-        _ = result.Should().BeEquivalentTo(expectedResult);
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(expectedResult);
     }
 
     private sealed record FakeCommand(string Prop1, string Prop2) : IRequest<Result>;
@@ -60,8 +60,8 @@ public class ValidationBehaviorTests
     {
         public FakeValidator()
         {
-            _ = this.RuleFor(x => x.Prop1).MinimumLength(4);
-            _ = this.RuleFor(x => x.Prop2).MinimumLength(8);
+            this.RuleFor(x => x.Prop1).MinimumLength(4);
+            this.RuleFor(x => x.Prop2).MinimumLength(8);
         }
     }
 }

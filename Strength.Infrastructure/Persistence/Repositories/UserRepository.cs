@@ -25,7 +25,7 @@ internal sealed class UserRepository(AppDataContext context) : IUserRepository
 
     public async Task<Guid> CreateUserAsync(User user, CancellationToken cancellationToken)
     {
-        _ = await context.Users.AddAsync(user, cancellationToken);
+        await context.Users.AddAsync(user, cancellationToken);
 
         return user.Id;
     }

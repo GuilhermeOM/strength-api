@@ -23,27 +23,27 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("DatabaseConnection");
 
-        _ = services.AddDbContext<AppDataContext>(options => options.UseSqlServer(connectionString));
+        services.AddDbContext<AppDataContext>(options => options.UseSqlServer(connectionString));
 
         return services;
     }
 
     private static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
-        _ = services.AddSingleton<ITokenService, TokenService>(_ => new TokenService(configuration));
+        services.AddSingleton<ITokenService, TokenService>(_ => new TokenService(configuration));
 
-        _ = services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailService, EmailService>();
 
         return services;
     }
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        _ = services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        _ = services.AddScoped<IUserRepository, UserRepository>();
-        _ = services.AddScoped<IUserRoleRepository, UserRoleRepository>();
-        _ = services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
 
         return services;
     }
@@ -57,7 +57,7 @@ public static class DependencyInjection
             throw new InvalidOperationException("SMTP port is not well configured");
         }
 
-        _ = services
+        services
             .AddFluentEmail(configuration["Email:SenderEmail"], configuration["Email:Sender"])
             .AddSmtpSender(configuration["Email:Host"], smtpPort);
 

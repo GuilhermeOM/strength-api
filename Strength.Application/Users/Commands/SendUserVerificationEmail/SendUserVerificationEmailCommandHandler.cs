@@ -45,7 +45,7 @@ internal sealed class SendUserVerificationEmailCommandHandler(
             return ResponseResult.WithErrors<string>(HttpStatusCode.InternalServerError, [UserErrors.VerificationEmailNotSent]);
         }
 
-        _ = memoryCache.Set(request.Email, DateTime.UtcNow, TimeSpan.FromMinutes(SendUserVerificationEmailConstants.CacheDurationInMinutes));
+        memoryCache.Set(request.Email, DateTime.UtcNow, TimeSpan.FromMinutes(SendUserVerificationEmailConstants.CacheDurationInMinutes));
 
         return Result.Success("An email with a verification link was sent!");
     }
