@@ -1,9 +1,10 @@
 namespace Strength.Domain.Repositories;
 
+using Base;
 using Entities;
 using Entities.Enums;
 
-public interface IRoleRepository
+public interface IRoleRepository : IBaseRepository<Role>
 {
-    Task<Role?> GetRoleByNameAsync(RoleName name, CancellationToken cancellationToken = default);
+    Task<Role?> GetByNameAsync(RoleName name, CancellationToken cancellationToken = default);
 }

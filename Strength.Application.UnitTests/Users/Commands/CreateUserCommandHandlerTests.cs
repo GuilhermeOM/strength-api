@@ -4,6 +4,7 @@ using System.Net;
 using Application.Users.Commands.CreateUser;
 using Domain.Entities.Enums;
 using Domain.Repositories;
+using Domain.Repositories.Base;
 using Domain.Services.Email;
 using Domain.Shared;
 using FluentValidation.TestHelper;
@@ -38,7 +39,7 @@ public class CreateUserCommandHandlerTests
         var validator = new CreateUserCommandValidator(this.userRepositoryMock.Object);
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User { Email = command.Email });
 
         // Act
@@ -62,7 +63,7 @@ public class CreateUserCommandHandlerTests
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
 
         this.userRepositoryMock
-            .Setup(mock => mock.CreateUserAsync(It.IsAny<User>(), default))
+            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
             .ReturnsAsync(Guid.Empty);
 
         this.unitOfWorkMock
@@ -91,11 +92,11 @@ public class CreateUserCommandHandlerTests
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
 
         this.userRepositoryMock
-            .Setup(mock => mock.CreateUserAsync(It.IsAny<User>(), default))
+            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
             .ReturnsAsync(Guid.NewGuid());
 
         this.roleRepositoryMock
-            .Setup(mock => mock.GetRoleByNameAsync(It.IsAny<RoleName>(), default))
+            .Setup(mock => mock.GetByNameAsync(It.IsAny<RoleName>(), default))
             .ReturnsAsync(null as Role);
 
         this.unitOfWorkMock
@@ -124,15 +125,15 @@ public class CreateUserCommandHandlerTests
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
 
         this.userRepositoryMock
-            .Setup(mock => mock.CreateUserAsync(It.IsAny<User>(), default))
+            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
             .ReturnsAsync(Guid.NewGuid());
 
         this.roleRepositoryMock
-            .Setup(mock => mock.GetRoleByNameAsync(It.IsAny<RoleName>(), default))
+            .Setup(mock => mock.GetByNameAsync(It.IsAny<RoleName>(), default))
             .ReturnsAsync(new Role());
 
         this.userRoleRepositoryMock
-            .Setup(mock => mock.CreateUserRoleAsync(It.IsAny<UserRole>(), default))
+            .Setup(mock => mock.CreateAsync(It.IsAny<UserRole>(), default))
             .ReturnsAsync(Guid.Empty);
 
         this.unitOfWorkMock
@@ -161,15 +162,15 @@ public class CreateUserCommandHandlerTests
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
 
         this.userRepositoryMock
-            .Setup(mock => mock.CreateUserAsync(It.IsAny<User>(), default))
+            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
             .ReturnsAsync(Guid.NewGuid());
 
         this.roleRepositoryMock
-            .Setup(mock => mock.GetRoleByNameAsync(It.IsAny<RoleName>(), default))
+            .Setup(mock => mock.GetByNameAsync(It.IsAny<RoleName>(), default))
             .ReturnsAsync(new Role());
 
         this.userRoleRepositoryMock
-            .Setup(mock => mock.CreateUserRoleAsync(It.IsAny<UserRole>(), default))
+            .Setup(mock => mock.CreateAsync(It.IsAny<UserRole>(), default))
             .ReturnsAsync(Guid.NewGuid());
 
         this.emailServiceMock
@@ -202,15 +203,15 @@ public class CreateUserCommandHandlerTests
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
 
         this.userRepositoryMock
-            .Setup(mock => mock.CreateUserAsync(It.IsAny<User>(), default))
+            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
             .ReturnsAsync(Guid.NewGuid());
 
         this.roleRepositoryMock
-            .Setup(mock => mock.GetRoleByNameAsync(It.IsAny<RoleName>(), default))
+            .Setup(mock => mock.GetByNameAsync(It.IsAny<RoleName>(), default))
             .ReturnsAsync(new Role());
 
         this.userRoleRepositoryMock
-            .Setup(mock => mock.CreateUserRoleAsync(It.IsAny<UserRole>(), default))
+            .Setup(mock => mock.CreateAsync(It.IsAny<UserRole>(), default))
             .ReturnsAsync(Guid.NewGuid());
 
         this.emailServiceMock

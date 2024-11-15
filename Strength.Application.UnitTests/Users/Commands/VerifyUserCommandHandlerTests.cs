@@ -3,6 +3,7 @@ namespace Strength.Application.UnitTests.Users.Commands;
 using System.Net;
 using Application.Users.Commands.VerifyUser;
 using Domain.Repositories;
+using Domain.Repositories.Base;
 using Domain.Shared;
 
 public class VerifyUserCommandHandlerTests
@@ -17,7 +18,7 @@ public class VerifyUserCommandHandlerTests
         var command = new VerifyUserCommand("fakeVerificationToken");
 
         this.userRepositoryMock.Setup(
-                mock => mock.GetUserByVerificationTokenAsync(
+                mock => mock.GetByVerificationTokenAsync(
                     It.IsAny<string>(),
                     default))
             .ReturnsAsync(null as User);
@@ -41,7 +42,7 @@ public class VerifyUserCommandHandlerTests
         var command = new VerifyUserCommand("fakeVerificationToken");
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserByVerificationTokenAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetByVerificationTokenAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User()
             {
                 VerifiedAt = DateTime.UtcNow
@@ -67,7 +68,7 @@ public class VerifyUserCommandHandlerTests
         var user = new User { Id = Guid.NewGuid(), Email = "email@test.com" };
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserByVerificationTokenAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetByVerificationTokenAsync(It.IsAny<string>(), default))
             .ReturnsAsync(user);
 
         this.unitOfWorkMock

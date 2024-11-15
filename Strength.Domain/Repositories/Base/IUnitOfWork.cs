@@ -1,4 +1,4 @@
-namespace Strength.Domain.Repositories;
+namespace Strength.Domain.Repositories.Base;
 
 using Shared;
 

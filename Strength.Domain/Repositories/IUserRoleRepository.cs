@@ -1,8 +1,6 @@
 namespace Strength.Domain.Repositories;
 
+using Base;
 using Entities;
 
-public interface IUserRoleRepository
-{
-    Task<Guid?> CreateUserRoleAsync(UserRole userRole, CancellationToken cancellationToken = default);
-}
+public interface IUserRoleRepository : IBaseRepository<UserRole>;

@@ -1,15 +1,11 @@
 namespace Strength.Domain.Repositories;
 
+using Base;
 using Entities;
 
-public interface IUserRepository
+public interface IUserRepository : IBaseRepository<User>
 {
-    Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default);
-    Task<User?> GetUserWithRolesByEmailAsync(string email, CancellationToken cancellationToken = default);
-
-    Task<User?> GetUserByVerificationTokenAsync(string verificationToken,
-        CancellationToken cancellationToken = default);
-
-    Task<Guid> CreateUserAsync(User user, CancellationToken cancellationToken = default);
-    Task<User?> UpdateUserAsync(User user, CancellationToken cancellationToken = default);
+    Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+    Task<User?> GetWithRolesByEmailAsync(string email, CancellationToken cancellationToken = default);
+    Task<User?> GetByVerificationTokenAsync(string verificationToken, CancellationToken cancellationToken = default);
 }

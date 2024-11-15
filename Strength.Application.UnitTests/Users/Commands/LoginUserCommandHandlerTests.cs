@@ -20,7 +20,7 @@ public class LoginUserCommandHandlerTests
         var command = new LoginUserCommand("email@test.com", "password123");
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(null as User);
 
         var handler = new LoginUserCommandHandler(
@@ -46,7 +46,7 @@ public class LoginUserCommandHandlerTests
         var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(command.Password));
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserWithRolesByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetWithRolesByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User
             {
                 Email = command.Email,
@@ -78,7 +78,7 @@ public class LoginUserCommandHandlerTests
         var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password321"));
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserWithRolesByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetWithRolesByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User
             {
                 Email = command.Email,
@@ -109,7 +109,7 @@ public class LoginUserCommandHandlerTests
         var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(command.Password));
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserWithRolesByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetWithRolesByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User
             {
                 Email = command.Email,

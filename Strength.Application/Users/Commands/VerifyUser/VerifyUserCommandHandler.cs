@@ -4,6 +4,7 @@ using System.Net;
 using Abstractions.Messaging;
 using Domain.Errors;
 using Domain.Repositories;
+using Domain.Repositories.Base;
 using Domain.Shared;
 
 internal sealed class VerifyUserCommandHandler(
@@ -12,7 +13,7 @@ internal sealed class VerifyUserCommandHandler(
 {
     public async Task<Result> Handle(VerifyUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetUserByVerificationTokenAsync(request.VerificationToken, cancellationToken);
+        var user = await userRepository.GetByVerificationTokenAsync(request.VerificationToken, cancellationToken);
 
         if (user is null)
         {
@@ -28,7 +29,7 @@ internal sealed class VerifyUserCommandHandler(
 
         return await unitOfWork.BeginTransactionAsync(async () =>
         {
-            var updatedUser = await userRepository.UpdateUserAsync(user, cancellationToken);
+            var updatedUser = await userRepository.UpdateAsync(user, cancellationToken);
             return updatedUser is null
                 ? ResponseResult.WithErrors(HttpStatusCode.InternalServerError, [ProcessErrors.InternalError])
                 : Result.Success();

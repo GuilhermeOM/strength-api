@@ -17,9 +17,7 @@ internal sealed class SendUserVerificationEmailCommandHandler(
 {
     public async Task<Result<string>> Handle(SendUserVerificationEmailCommand request, CancellationToken cancellationToken)
     {
-        var inMemoryUser = memoryCache.TryGetValue(request.Email, out var inMemoryValue);
-
-        if (inMemoryUser)
+        if (memoryCache.TryGetValue(request.Email, out var inMemoryValue))
         {
             var memoryInsertUtcTime = DateTime.Parse(inMemoryValue!.ToString()!, CultureInfo.InvariantCulture);
             var cacheExpirationTimeInMinutes =
@@ -28,7 +26,7 @@ internal sealed class SendUserVerificationEmailCommandHandler(
             return Result.Success($"Email is already sent. Try again after {Math.Round(cacheExpirationTimeInMinutes, 2)} minutes.");
         }
 
-        var user = await userRepository.GetUserByEmailAsync(request.Email, cancellationToken);
+        var user = await userRepository.GetByEmailAsync(request.Email, cancellationToken);
 
         if (user is null)
         {

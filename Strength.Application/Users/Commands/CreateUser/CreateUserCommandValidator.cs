@@ -14,7 +14,7 @@ internal sealed class CreateUserCommandValidator : AbstractValidator<CreateUserC
 
         this.RuleFor(x => x.Email)
             .MustAsync(async (email, cancellationToken) =>
-                await userRepository.GetUserByEmailAsync(email, cancellationToken) is null)
+                await userRepository.GetByEmailAsync(email, cancellationToken) is null)
             .WithMessage(UserErrors.AlreadyExists.Description);
 
         this.RuleFor(x => x.Password).MinimumLength(8);

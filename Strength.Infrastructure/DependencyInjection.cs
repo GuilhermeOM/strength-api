@@ -1,6 +1,7 @@
 namespace Strength.Infrastructure;
 
 using Domain.Repositories;
+using Domain.Repositories.Base;
 using Domain.Services.Token;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

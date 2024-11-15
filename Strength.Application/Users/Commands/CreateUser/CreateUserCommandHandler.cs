@@ -8,6 +8,7 @@ using Domain.Entities;
 using Domain.Entities.Enums;
 using Domain.Errors;
 using Domain.Repositories;
+using Domain.Repositories.Base;
 using Domain.Services.Email;
 using Domain.Shared;
 
@@ -26,19 +27,19 @@ internal sealed class CreateUserCommandHandler(
 
         return await unitOfWork.BeginTransactionAsync(async () =>
         {
-            var newUserId = await userRepository.CreateUserAsync(user, cancellationToken);
+            var newUserId = await userRepository.CreateAsync(user, cancellationToken);
             if (newUserId == Guid.Empty)
             {
                 return ResponseResult.WithErrors(HttpStatusCode.InternalServerError, [UserErrors.NotCreated]);
             }
 
-            var role = await roleRepository.GetRoleByNameAsync(RoleName.User, cancellationToken);
+            var role = await roleRepository.GetByNameAsync(RoleName.User, cancellationToken);
             if (role is null)
             {
                 return ResponseResult.WithErrors(HttpStatusCode.InternalServerError, [RoleErrors.NotFound]);
             }
 
-            var newUserRole = await userRoleRepository.CreateUserRoleAsync(new UserRole { User = user, Role = role }, cancellationToken);
+            var newUserRole = await userRoleRepository.CreateAsync(new UserRole { User = user, Role = role }, cancellationToken);
             if (newUserRole == Guid.Empty)
             {
                 return ResponseResult.WithErrors(HttpStatusCode.InternalServerError, [UserRoleErrors.NotCreated]);

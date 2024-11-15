@@ -15,7 +15,7 @@ internal sealed class LoginUserCommandHandler(
 {
     public async Task<Result<AuthToken>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var userWithRoles = await userRepository.GetUserWithRolesByEmailAsync(request.Email, cancellationToken);
+        var userWithRoles = await userRepository.GetWithRolesByEmailAsync(request.Email, cancellationToken);
 
         if (userWithRoles is null)
         {

@@ -70,7 +70,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .Returns(false);
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(null as User);
 
         // Act
@@ -98,7 +98,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .Returns(false);
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User { VerifiedAt = DateTime.UtcNow });
 
         // Act
@@ -126,7 +126,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .Returns(false);
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User());
 
         this.emailServiceMock
@@ -158,7 +158,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .Returns(false);
 
         this.userRepositoryMock
-            .Setup(mock => mock.GetUserByEmailAsync(It.IsAny<string>(), default))
+            .Setup(mock => mock.GetByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User());
 
         this.memoryCacheMock
