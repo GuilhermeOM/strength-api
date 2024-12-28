@@ -21,8 +21,7 @@ internal sealed class TokenService(IConfiguration configuration) : ITokenService
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var jwtExpirationInMinutesIsConfigured = int.TryParse(configuration["Jwt:ExpirationInMinutes"],
-            out var expirationInMinutes);
+        var jwtExpirationInMinutesIsConfigured = int.TryParse(configuration["Jwt:ExpirationInMinutes"], out var expirationInMinutes);
         expirationInMinutes = jwtExpirationInMinutesIsConfigured ? expirationInMinutes : 60; // default 1h
 
         var claims = new List<Claim>

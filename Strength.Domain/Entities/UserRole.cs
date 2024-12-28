@@ -4,6 +4,6 @@ using Base;
 
 public class UserRole : BaseEntity
 {
-    public User User { get; init; } = new();
-    public Role Role { get; init; } = new();
+    public required User User { get; init; }
+    public required Role Role { get; init; }
 }

@@ -12,13 +12,7 @@ public class ValidationBehaviorTests
     public async Task ShouldReturnValidationResultWithErrorsWhenValidatorContainsErrors()
     {
         // Arrange
-        static Task<Result> FakeHandler()
-        {
-            return Task.FromResult(Result.Success());
-        }
-
         var createUserCommand = new FakeCommand("", "");
-
         var validationBehavior = new ValidationBehavior<FakeCommand, Result>(new List<FakeValidator> { new() });
 
         // Act
@@ -35,15 +29,7 @@ public class ValidationBehaviorTests
     public async Task ShouldReturnResultWithSuccessWhenValidatorDoesContainsNoErrors()
     {
         // Arrange
-        var expectedResult = Result.Success();
-
-        Task<Result> FakeHandler()
-        {
-            return Task.FromResult(expectedResult);
-        }
-
         var createUserCommand = new FakeCommand("1234", "12345678");
-
         var validationBehavior = new ValidationBehavior<FakeCommand, Result>(new List<FakeValidator> { new() });
 
         // Act
@@ -51,8 +37,10 @@ public class ValidationBehaviorTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(expectedResult);
+        result.IsSuccess.Should().BeTrue();
     }
+
+    private static Task<Result> FakeHandler() => Task.FromResult(Result.Success());
 
     private sealed record FakeCommand(string Prop1, string Prop2) : IRequest<Result>;
 
@@ -60,8 +48,8 @@ public class ValidationBehaviorTests
     {
         public FakeValidator()
         {
-            this.RuleFor(x => x.Prop1).MinimumLength(4);
-            this.RuleFor(x => x.Prop2).MinimumLength(8);
+            RuleFor(x => x.Prop1).MinimumLength(4);
+            RuleFor(x => x.Prop2).MinimumLength(8);
         }
     }
 }

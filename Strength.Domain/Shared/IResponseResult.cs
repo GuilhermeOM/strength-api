@@ -5,9 +5,7 @@ using Constants;
 
 public interface IResponseResult
 {
-    public static readonly CustomError ResponseError = new(
-        ErrorConstants.ResponseFailure,
-        "An error occurred");
+    public static readonly CustomError ResponseError = new(ErrorConstants.ResponseFailure, "An error occurred");
 
     HttpStatusCode StatusCode { get; }
     CustomError[] Errors { get; }

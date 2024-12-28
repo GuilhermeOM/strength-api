@@ -14,7 +14,7 @@ internal sealed class EmailService(
         string verificationToken,
         CancellationToken cancellationToken = default)
     {
-        var verificationLink = this.CreateVerificationLink(verificationToken);
+        var verificationLink = CreateVerificationLink(verificationToken);
         var sendResponse = await fluentEmail
             .To(email)
             .Subject("Email verification for Strength")
@@ -28,7 +28,6 @@ internal sealed class EmailService(
     {
         var httpContextRequest = httpContextAccessor.HttpContext?.Request;
 
-        return
-            $"{httpContextRequest?.Scheme}://{httpContextRequest?.Host}/api/user/{UserControllerConstants.VerifyEndpointName}?verificationToken={verificationToken}";
+        return $"{httpContextRequest?.Scheme}://{httpContextRequest?.Host}/api/user/{UserControllerConstants.VerifyEndpointName}?verificationToken={verificationToken}";
     }
 }
