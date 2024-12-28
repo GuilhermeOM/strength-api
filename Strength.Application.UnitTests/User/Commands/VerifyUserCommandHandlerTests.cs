@@ -9,8 +9,20 @@ using User = Domain.Entities.User;
 
 public class VerifyUserCommandHandlerTests
 {
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
+
+    private readonly VerifyUserCommandHandler _commandHandler;
+
+    public VerifyUserCommandHandlerTests()
+    {
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _userRepositoryMock = new Mock<IUserRepository>();
+
+        _commandHandler = new VerifyUserCommandHandler(
+            _userRepositoryMock.Object,
+            _unitOfWorkMock.Object);
+    }
 
     [Fact]
     public async Task ShouldReturnFailureWhenVerificationTokenIsNotAttachToUser()
@@ -22,12 +34,8 @@ public class VerifyUserCommandHandlerTests
             .Setup(mock => mock.GetByVerificationTokenAsync(It.IsAny<string>(), default))
             .ReturnsAsync(null as User);
 
-        var handler = new VerifyUserCommandHandler(
-            _userRepositoryMock.Object,
-            _unitOfWorkMock.Object);
-
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -47,12 +55,8 @@ public class VerifyUserCommandHandlerTests
                 VerifiedAt = DateTime.UtcNow
             });
 
-        var handler = new VerifyUserCommandHandler(
-            _userRepositoryMock.Object,
-            _unitOfWorkMock.Object);
-
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -74,12 +78,8 @@ public class VerifyUserCommandHandlerTests
             .Setup(mock => mock.BeginTransactionAsync(It.IsAny<Func<Task<Result>>>(), default))
             .ReturnsAsync(Result.Success());
 
-        var handler = new VerifyUserCommandHandler(
-            _userRepositoryMock.Object,
-            _unitOfWorkMock.Object);
-
         // Act
-        var result = await handler.Handle(command, default);
+        var result = await _commandHandler.Handle(command, default);
 
         // Assert
         result.IsSuccess.Should().BeTrue();

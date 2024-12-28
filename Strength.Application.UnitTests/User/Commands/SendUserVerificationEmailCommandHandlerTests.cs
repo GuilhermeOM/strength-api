@@ -13,15 +13,26 @@ using User = Domain.Entities.User;
 
 public partial class SendUserVerificationEmailCommandHandlerTests
 {
-    private readonly Mock<IEmailService> _emailServiceMock = new();
-    private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<IMemoryCache> _memoryCacheMock = new();
+    private readonly Mock<IEmailService> _emailServiceMock;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IMemoryCache> _memoryCacheMock;
+
+    private readonly SendUserVerificationEmailCommandHandler _commandHandler;
 
     public SendUserVerificationEmailCommandHandlerTests()
     {
         var cultureInfo = CultureInfo.CreateSpecificCulture("en-US");
         CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
         CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+        _emailServiceMock = new Mock<IEmailService>();
+        _userRepositoryMock = new Mock<IUserRepository>();
+        _memoryCacheMock = new Mock<IMemoryCache>();
+
+        _commandHandler = new SendUserVerificationEmailCommandHandler(
+            _emailServiceMock.Object,
+            _userRepositoryMock.Object,
+            _memoryCacheMock.Object);
     }
 
     [Fact]
@@ -29,11 +40,6 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
-        var handler = new SendUserVerificationEmailCommandHandler(
-            _emailServiceMock.Object,
-            _userRepositoryMock.Object,
-            _memoryCacheMock.Object);
-
         var inMemoryObject = (object)DateTime.UtcNow;
 
         _memoryCacheMock
@@ -41,7 +47,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .Returns(true);
 
         // Act
-        var result = await handler.Handle(command, default);
+        var result = await _commandHandler.Handle(command, default);
 
         // Assert
         var expiration =
@@ -59,11 +65,6 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
-        var handler = new SendUserVerificationEmailCommandHandler(
-            _emailServiceMock.Object,
-            _userRepositoryMock.Object,
-            _memoryCacheMock.Object);
-
         var anyMemoryObject = It.IsAny<object>();
 
         _memoryCacheMock
@@ -75,7 +76,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .ReturnsAsync(null as User);
 
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -87,11 +88,6 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
-        var handler = new SendUserVerificationEmailCommandHandler(
-            _emailServiceMock.Object,
-            _userRepositoryMock.Object,
-            _memoryCacheMock.Object);
-
         var anyMemoryObject = It.IsAny<object>();
 
         _memoryCacheMock
@@ -103,7 +99,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .ReturnsAsync(new User { VerifiedAt = DateTime.UtcNow });
 
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Conflict);
@@ -115,11 +111,6 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
-        var handler = new SendUserVerificationEmailCommandHandler(
-            _emailServiceMock.Object,
-            _userRepositoryMock.Object,
-            _memoryCacheMock.Object);
-
         var anyMemoryObject = It.IsAny<object>();
 
         _memoryCacheMock
@@ -135,7 +126,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .ReturnsAsync(false);
 
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -147,11 +138,6 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
-        var handler = new SendUserVerificationEmailCommandHandler(
-            _emailServiceMock.Object,
-            _userRepositoryMock.Object,
-            _memoryCacheMock.Object);
-
         var anyMemoryObject = It.IsAny<object>();
 
         _memoryCacheMock
@@ -171,7 +157,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var result = await handler.Handle(command, default);
+        var result = await _commandHandler.Handle(command, default);
 
         // Assert
         result.IsSuccess.Should().BeTrue();

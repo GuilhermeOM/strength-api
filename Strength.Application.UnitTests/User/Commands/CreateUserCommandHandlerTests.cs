@@ -12,11 +12,28 @@ using User = Domain.Entities.User;
 
 public class CreateUserCommandHandlerTests
 {
-    private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly Mock<IRoleRepository> _roleRepositoryMock = new();
-    private readonly Mock<IUserRoleRepository> _userRoleRepositoryMock = new();
-    private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<IEmailService> _emailServiceMock = new();
+    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IRoleRepository> _roleRepositoryMock;
+    private readonly Mock<IUserRoleRepository> _userRoleRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IEmailService> _emailServiceMock;
+
+    private readonly CreateUserCommandHandler _commandHandler;
+
+    public CreateUserCommandHandlerTests()
+    {
+        _userRepositoryMock = new Mock<IUserRepository>();
+        _roleRepositoryMock = new Mock<IRoleRepository>();
+        _userRoleRepositoryMock = new Mock<IUserRoleRepository>();
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _emailServiceMock = new Mock<IEmailService>();
+
+        _commandHandler = new CreateUserCommandHandler(
+            _emailServiceMock.Object,
+            _userRoleRepositoryMock.Object,
+            _roleRepositoryMock.Object,
+            _unitOfWorkMock.Object);
+    }
 
     [Fact]
     public async Task ShouldReturnFailureWhenConfirmPasswordIsNotEqualToPassword()
@@ -51,48 +68,10 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnInternalFailureWhenUserNotCreated()
+    public async Task ShouldReturnInternalFailureWhenRoleNotFound()
     {
         // Arrange
-        var handler = new CreateUserCommandHandler(
-            _emailServiceMock.Object,
-            _userRoleRepositoryMock.Object,
-            _roleRepositoryMock.Object,
-            _unitOfWorkMock.Object);
-
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
-
-        _userRepositoryMock
-            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
-            .ReturnsAsync(Guid.Empty);
-
-        _unitOfWorkMock
-            .Setup(mock => mock.BeginTransactionAsync(It.IsAny<Func<Task<Result>>>(), default))
-            .Returns<Func<Task<Result>>, CancellationToken>(async (func, _) => await func());
-
-        // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
-
-        // Assert
-        result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        result.Errors.Should().Contain(UserErrors.NotCreated);
-    }
-
-    [Fact]
-    public async Task ShouldReturnInternalFailureWhenRoleUserNotFound()
-    {
-        // Arrange
-        var handler = new CreateUserCommandHandler(
-            _emailServiceMock.Object,
-            _userRoleRepositoryMock.Object,
-            _roleRepositoryMock.Object,
-            _unitOfWorkMock.Object);
-
-        var command = new CreateUserCommand("test@example.com", "password123", "password123");
-
-        _userRepositoryMock
-            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
-            .ReturnsAsync(Guid.NewGuid());
 
         _roleRepositoryMock
             .Setup(mock => mock.GetByNameAsync(It.IsAny<RoleName>(), default))
@@ -103,7 +82,7 @@ public class CreateUserCommandHandlerTests
             .Returns<Func<Task<Result>>, CancellationToken>(async (func, _) => await func());
 
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -114,17 +93,7 @@ public class CreateUserCommandHandlerTests
     public async Task ShouldReturnInternalFailureWhenUserRoleNotCreated()
     {
         // Arrange
-        var handler = new CreateUserCommandHandler(
-            _emailServiceMock.Object,
-            _userRoleRepositoryMock.Object,
-            _roleRepositoryMock.Object,
-            _unitOfWorkMock.Object);
-
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
-
-        _userRepositoryMock
-            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
-            .ReturnsAsync(Guid.NewGuid());
 
         _roleRepositoryMock
             .Setup(mock => mock.GetByNameAsync(It.IsAny<RoleName>(), default))
@@ -139,7 +108,7 @@ public class CreateUserCommandHandlerTests
             .Returns<Func<Task<Result>>, CancellationToken>(async (func, _) => await func());
 
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -150,17 +119,7 @@ public class CreateUserCommandHandlerTests
     public async Task ShouldReturnInternalFailureWhenVerificationEmailNotSent()
     {
         // Arrange
-        var handler = new CreateUserCommandHandler(
-            _emailServiceMock.Object,
-            _userRoleRepositoryMock.Object,
-            _roleRepositoryMock.Object,
-            _unitOfWorkMock.Object);
-
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
-
-        _userRepositoryMock
-            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
-            .ReturnsAsync(Guid.NewGuid());
 
         _roleRepositoryMock
             .Setup(mock => mock.GetByNameAsync(It.IsAny<RoleName>(), default))
@@ -179,7 +138,7 @@ public class CreateUserCommandHandlerTests
             .Returns<Func<Task<Result>>, CancellationToken>(async (func, _) => await func());
 
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -190,17 +149,7 @@ public class CreateUserCommandHandlerTests
     public async Task ShouldReturnSuccessWhenVerificationEmailSent()
     {
         // Arrange
-        var handler = new CreateUserCommandHandler(
-            _emailServiceMock.Object,
-            _userRoleRepositoryMock.Object,
-            _roleRepositoryMock.Object,
-            _unitOfWorkMock.Object);
-
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
-
-        _userRepositoryMock
-            .Setup(mock => mock.CreateAsync(It.IsAny<User>(), default))
-            .ReturnsAsync(Guid.NewGuid());
 
         _roleRepositoryMock
             .Setup(mock => mock.GetByNameAsync(It.IsAny<RoleName>(), default))
@@ -219,7 +168,7 @@ public class CreateUserCommandHandlerTests
             .Returns<Func<Task<Result>>, CancellationToken>(async (func, _) => await func());
 
         // Act
-        var result = await handler.Handle(command, default);
+        var result = await _commandHandler.Handle(command, default);
 
         // Assert
         result.IsSuccess.Should().BeTrue();

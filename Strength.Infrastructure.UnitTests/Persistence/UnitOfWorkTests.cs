@@ -10,6 +10,7 @@ public class UnitOfWorkTests
 {
     private readonly Mock<AppDataContext> _appDataContextMock;
     private readonly Mock<IDbContextTransaction> _dbContextTransactionMock;
+
     private readonly UnitOfWork _unitOfWork;
 
     public UnitOfWorkTests()
@@ -65,7 +66,7 @@ public class UnitOfWorkTests
         var actualResult = await _unitOfWork.BeginTransactionAsync(FailureAction, CancellationToken.None);
 
         // Assert
-        Assert.False(actualResult.IsSuccess);
+        actualResult.IsSuccess.Should().BeFalse();
 
         _appDataContextMock.Verify(
             context => context.SaveChangesAsync(It.IsAny<CancellationToken>()),

@@ -11,8 +11,20 @@ using User = Domain.Entities.User;
 
 public class LoginUserCommandHandlerTests
 {
-    private readonly Mock<ITokenService> _tokenProviderMock = new();
-    private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<ITokenService> _tokenProviderMock;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
+
+    private readonly LoginUserCommandHandler _commandHandler;
+
+    public LoginUserCommandHandlerTests()
+    {
+        _tokenProviderMock = new Mock<ITokenService>();
+        _userRepositoryMock = new Mock<IUserRepository>();
+
+        _commandHandler = new LoginUserCommandHandler(
+            _userRepositoryMock.Object,
+            _tokenProviderMock.Object);
+    }
 
     [Fact]
     public async Task ShouldReturnFailureWhenEmailNotExists()
@@ -24,12 +36,8 @@ public class LoginUserCommandHandlerTests
             .Setup(mock => mock.GetByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(null as User);
 
-        var handler = new LoginUserCommandHandler(
-            _userRepositoryMock.Object,
-            _tokenProviderMock.Object);
-
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -42,26 +50,19 @@ public class LoginUserCommandHandlerTests
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
 
-        using var hmac = new HMACSHA512();
-        var passwordSalt = hmac.Key;
-        var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(command.Password));
+        HashPassword(command.Password, out var passwordHash, out var passwordSalt);
 
         _userRepositoryMock
             .Setup(mock => mock.GetWithRolesByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User
             {
-                Email = command.Email,
                 VerifiedAt = null,
                 PasswordSalt = passwordSalt,
                 PasswordHash = passwordHash
             });
 
-        var handler = new LoginUserCommandHandler(
-            _userRepositoryMock.Object,
-            _tokenProviderMock.Object);
-
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -73,26 +74,20 @@ public class LoginUserCommandHandlerTests
     {
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
+        const string wrongPassword = "password123";
 
-        using var hmac = new HMACSHA512();
-        var passwordSalt = hmac.Key;
-        var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password321"));
+        HashPassword(wrongPassword, out var passwordSalt, out var passwordHash);
 
         _userRepositoryMock
             .Setup(mock => mock.GetWithRolesByEmailAsync(It.IsAny<string>(), default))
             .ReturnsAsync(new User
             {
-                Email = command.Email,
                 PasswordSalt = passwordSalt,
                 PasswordHash = passwordHash
             });
 
-        var handler = new LoginUserCommandHandler(
-            _userRepositoryMock.Object,
-            _tokenProviderMock.Object);
-
         // Act
-        var result = (IResponseResult)await handler.Handle(command, default);
+        var result = (IResponseResult)await _commandHandler.Handle(command, default);
 
         // Assert
         result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -105,9 +100,7 @@ public class LoginUserCommandHandlerTests
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
 
-        using var hmac = new HMACSHA512();
-        var passwordSalt = hmac.Key;
-        var passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(command.Password));
+        HashPassword(command.Password, out var passwordHash, out var passwordSalt);
 
         _userRepositoryMock
             .Setup(mock => mock.GetWithRolesByEmailAsync(It.IsAny<string>(), default))
@@ -128,15 +121,18 @@ public class LoginUserCommandHandlerTests
                 TokenType = string.Empty
             });
 
-        var handler = new LoginUserCommandHandler(
-            _userRepositoryMock.Object,
-            _tokenProviderMock.Object);
-
         // Act
-        var result = await handler.Handle(command, default);
+        var result = await _commandHandler.Handle(command, default);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
+    }
+
+    private static void HashPassword(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    {
+        using var hmac = new HMACSHA512();
+        passwordSalt = hmac.Key;
+        passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
     }
 }
