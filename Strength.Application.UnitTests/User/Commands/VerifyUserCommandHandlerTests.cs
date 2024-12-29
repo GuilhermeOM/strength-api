@@ -25,7 +25,7 @@ public class VerifyUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenVerificationTokenIsNotAttachToUser()
+    public async Task Handle_ShouldReturnFailure_WhenVerificationTokenIsNotAttachToUser()
     {
         // Arrange
         var command = new VerifyUserCommand("fakeVerificationToken");
@@ -43,7 +43,7 @@ public class VerifyUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenUserAlreadyVerified()
+    public async Task Handle_ShouldReturnFailure_WhenUserAlreadyVerified()
     {
         // Arrange
         var command = new VerifyUserCommand("fakeVerificationToken");
@@ -64,7 +64,7 @@ public class VerifyUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task UserVerifiedAtShouldNotBeNullWhenSuccess()
+    public async Task Handle_ShouldNotHaveUserVerifiedAtNull_WhenSuccess()
     {
         // Arrange
         var command = new VerifyUserCommand("fakeVerificationToken");

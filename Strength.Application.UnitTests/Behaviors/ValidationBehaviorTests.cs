@@ -9,7 +9,7 @@ using MediatR;
 public class ValidationBehaviorTests
 {
     [Fact]
-    public async Task ShouldReturnValidationResultWithErrorsWhenValidatorContainsErrors()
+    public async Task Handle_ShouldReturnValidationResultWithErrors_WhenValidatorContainsErrors()
     {
         // Arrange
         var createUserCommand = new FakeCommand("", "");
@@ -26,7 +26,7 @@ public class ValidationBehaviorTests
     }
 
     [Fact]
-    public async Task ShouldReturnResultWithSuccessWhenValidatorDoesContainsNoErrors()
+    public async Task Handle_ShouldReturnResultWithSuccess_WhenValidatorDoesContainsNoErrors()
     {
         // Arrange
         var createUserCommand = new FakeCommand("1234", "12345678");

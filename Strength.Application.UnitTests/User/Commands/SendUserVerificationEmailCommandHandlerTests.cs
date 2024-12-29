@@ -36,7 +36,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnSuccessAndExpirationTimeWhenEmailFoundInCache()
+    public async Task Handle_ShouldReturnSuccessAndExpirationTime_WhenEmailFoundInCache()
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
@@ -61,7 +61,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenEmailNotExists()
+    public async Task Handle_ShouldReturnFailure_WhenEmailNotExists()
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
@@ -84,7 +84,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenUserAlreadyVerified()
+    public async Task Handle_ShouldReturnFailure_WhenUserAlreadyVerified()
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
@@ -107,7 +107,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnInternalFailureWhenEmailNotSent()
+    public async Task Handle_ShouldReturnInternalFailure_WhenEmailNotSent()
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");
@@ -134,7 +134,7 @@ public partial class SendUserVerificationEmailCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnSuccessWhenEmailSent()
+    public async Task Handle_ShouldReturnSuccess_WhenEmailSent()
     {
         // Arrange
         var command = new SendUserVerificationEmailCommand("email@test.com");

@@ -4,7 +4,7 @@ using Strength.Domain.Repositories;
 using Strength.Domain.Repositories.Base;
 using Strength.Domain.Shared;
 
-namespace Strength.Application.UnitTests.User.Commands;
+namespace Strength.Application.UnitTests.MuscleExercise.Commands;
 
 public class CreateManyMuscleExerciseCommandHandlerTests
 {

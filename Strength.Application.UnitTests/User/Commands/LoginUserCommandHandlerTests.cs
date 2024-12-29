@@ -27,7 +27,7 @@ public class LoginUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenEmailNotExists()
+    public async Task Handle_ShouldReturnFailure_WhenEmailNotExists()
     {
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
@@ -45,7 +45,7 @@ public class LoginUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenUserNotVerified()
+    public async Task Handle_ShouldReturnFailure_WhenUserNotVerified()
     {
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
@@ -70,7 +70,7 @@ public class LoginUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenPasswordDoesNotMatch()
+    public async Task Handle_ShouldReturnFailure_WhenPasswordDoesNotMatch()
     {
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");
@@ -95,7 +95,7 @@ public class LoginUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnTokenWhenPasswordMatches()
+    public async Task Handle_ShouldReturnToken_WhenPasswordMatches()
     {
         // Arrange
         var command = new LoginUserCommand("email@test.com", "password123");

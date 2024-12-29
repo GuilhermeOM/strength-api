@@ -40,7 +40,7 @@ public class UnitOfWorkTests
     }
 
     [Fact]
-    public async Task BeginTransactionAsyncShouldCommitWhenActionSucceeds()
+    public async Task BeginTransactionAsync_ShouldCommit_WhenActionSucceeds()
     {
         // Act
         var actualResult = await _unitOfWork.BeginTransactionAsync(SuccessAction, CancellationToken.None);
@@ -60,7 +60,7 @@ public class UnitOfWorkTests
     }
 
     [Fact]
-    public async Task BeginTransactionAsyncShouldRollbackWhenActionFails()
+    public async Task BeginTransactionAsync_ShouldRollback_WhenActionFails()
     {
         // Act
         var actualResult = await _unitOfWork.BeginTransactionAsync(FailureAction, CancellationToken.None);
@@ -80,7 +80,7 @@ public class UnitOfWorkTests
     }
 
     [Fact]
-    public async Task BeginTransactionAsyncShouldRollbackWhenExceptionIsThrown()
+    public async Task BeginTransactionAsync_ShouldRollback_WhenExceptionIsThrown()
     {
         // Act
         var actualResult = await _unitOfWork.BeginTransactionAsync(ExceptionAction, CancellationToken.None);

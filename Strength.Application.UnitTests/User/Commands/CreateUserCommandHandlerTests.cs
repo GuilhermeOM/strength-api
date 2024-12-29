@@ -36,7 +36,7 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenConfirmPasswordIsNotEqualToPassword()
+    public async Task Handle_ShouldReturnFailure_WhenConfirmPasswordIsNotEqualToPassword()
     {
         // Arrange
         var command = new CreateUserCommand("email@test.com", "password123", "password321");
@@ -50,7 +50,7 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnFailureWhenEmailIsNotUnique()
+    public async Task Handle_ShouldReturnFailure_WhenEmailIsNotUnique()
     {
         // Arrange
         var command = new CreateUserCommand("email@test.com", "password123", "password123");
@@ -68,7 +68,7 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnInternalFailureWhenRoleNotFound()
+    public async Task Handle_ShouldReturnInternalFailure_WhenRoleNotFound()
     {
         // Arrange
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
@@ -90,7 +90,7 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnInternalFailureWhenUserRoleNotCreated()
+    public async Task Handle_ShouldReturnInternalFailure_WhenUserRoleNotCreated()
     {
         // Arrange
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
@@ -116,7 +116,7 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnInternalFailureWhenVerificationEmailNotSent()
+    public async Task Handle_ShouldReturnInternalFailure_WhenVerificationEmailNotSent()
     {
         // Arrange
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
@@ -146,7 +146,7 @@ public class CreateUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task ShouldReturnSuccessWhenVerificationEmailSent()
+    public async Task Handle_ShouldReturnSuccess_WhenVerificationEmailSent()
     {
         // Arrange
         var command = new CreateUserCommand("test@example.com", "password123", "password123");
